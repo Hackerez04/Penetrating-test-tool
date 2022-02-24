@@ -8,6 +8,10 @@ Easy to use pentesting tool with graphical interface.
 2. Port Scanner
 3. Arp Poisoning Attack
 
+## Required modules
+1. scapy
+2. netifaces
+
 ## Todo
 - [ ] Add new tools
 - [ ] Improve graphics
