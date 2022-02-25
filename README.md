@@ -7,6 +7,7 @@ Easy to use pentesting tool with graphical interface.
 1. Network Scanner
 2. Port Scanner
 3. Arp Poisoning Attack
+4. Wifi password grabber
 
 ## Required modules
 1. scapy
