@@ -9,12 +9,37 @@ import time
 from datetime import datetime
 import threading
 from socket import *
-import scapy.all as scapy
+try:
+    import scapy.all as scapy
+except ImportError:
+    print("'scapy' not installed\n")
+    print("Trying to install 'scapy'...")
+    try:
+        os.system("py -m pip install scapy")
+    except Exception:
+        try:
+            os.system("python -m pip install scapy")
+        except Exception:
+            print("Failed to install 'scapy'\nThe tool will not work. Please try to install 'scapy' manually")
 import argparse
 import sys
+try:
+    import netifaces
+except ImportError:
+    print("'netifaces' not installed\n")
+    print("Trying to install 'netifaces'...")
+    try:
+        os.system("py -m pip install netifaces")
+    except Exception:
+        try:
+            os.system("python -m pip install netifaces")
+        except Exception:
+            print("Failed to install 'netifaces'\nThe tool will not work. Please try to install 'netifaces' manually")
 
-import netifaces
 
+
+global version
+version="1.2"
 
 global be_verbose
 be_verbose=0
@@ -465,7 +490,11 @@ def main():
     r_table=Frame(root, bg="darkgray")
     #tool_1=Frame(root, bg="gray")
     def menu_callback2():
-        print("coming soon")
+        global version
+        ds="discord.com/invite/D3AVjxF"
+        info="Pentesting tool created by Hackerez\n(Discord: %s)\n\nVersion: %s"%(ds,version)
+        info+="\n\nTools: Network Scanner, Port Scanner, ARP Poisoning Attack, Wifi Password Grabber"
+        messagebox.showinfo("Info","%s"%(info))
     def menu_callback():
         global captured_host, table_on
         if table_on==False:
@@ -825,11 +854,13 @@ exit /b
                                  variable=radioValue, value=1, command=select) 
     rdioTwo = tk.Radiobutton(root, text='Port Scan',
                                  variable=radioValue, value=2, command=select) 
-
+##    rdioThree = tk.Radiobutton(root, text='March',
+##                                 variable=radioValue, value=3)
 
     rdioOne.place(x=50, y=100)
     rdioTwo.place(x=150, y=100)
-   
+    #rdioThree.grid(column=0, row=2)
+
 
     root.mainloop()
     
